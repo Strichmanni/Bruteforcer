@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brute Force Username and Password Cracker</title>
+</head>
+<body>
+    <h1>Brute Force Username and Password Cracker</h1>
+    <form action="bruteforce.php" method="post">
+        <label for="target_url">Target URL or IP:</label>
+        <input type="text" id="target_url" name="target_url" required><br><br>
+
+        <label for="username_target">Username to brute-force:</label>
+        <input type="text" id="username_target" name="username_target" required><br><br>
+        
+        <label for="password_target">Password to brute-force:</label>
+        <input type="text" id="password_target" name="password_target" required><br><br>
+        
+        <label for="max_length">Maximum length of username and password to try:</label>
+        <input type="number" id="max_length" name="max_length" required><br><br>
+        
+        <input type="submit" value="Start Brute Force">
+    </form>
+</body>
+</html>
