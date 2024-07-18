@@ -1,6 +1,7 @@
 # Brute Force Username and Password Cracker
 
-Dieses Projekt demonstriert einen Brute-Force-Ansatz zum Erraten von Benutzernamen und Passwörtern mit PHP und HTML. 
+Dieses Projekt demonstriert einen Brute-Force-Ansatz zum Erraten von Benutzernamen und Passwörtern mit PHP und HTML.
+Die Verwendung dieses Projekts für illegale Zwcke ist verboten!
 
 ## Voraussetzungen
 
