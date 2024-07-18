@@ -13,7 +13,7 @@ Die Verwendung dieses Projekts für illegale Zwcke ist verboten!
 1. Klonen Sie das Repository:
 
     ```bash
-    git clone https://github.com/username/bruteforce-cracker.git
+    git clone https://github.com/Strichmanni/Bruteforcer.git
     cd bruteforce-cracker
     ```
 
